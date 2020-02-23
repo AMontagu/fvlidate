@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
+    "object-path": "^0.11.4",
+    "pinia": "^0.1.0-alpha.1",
     "vue": "^3.0.0-alpha.4"
   },
   "devDependencies": {

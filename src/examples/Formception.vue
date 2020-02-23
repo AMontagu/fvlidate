@@ -41,15 +41,15 @@ const SCHEMA = {
     // NOTE: Nested SchemaForm!
     component: SchemaForm,
     schema: {
-      firstName: {
+      firstNameNested: {
         component: FormText,
         label: 'Nested First Name'
       },
-      lastName: {
+      lastNameNested: {
         component: FormText,
         label: 'Nested Last Name'
       },
-      email: {
+      emailNested: {
         component: FormText,
         label: 'Nested Email',
         required: true,

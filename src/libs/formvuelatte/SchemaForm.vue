@@ -7,7 +7,8 @@
         :key="field.model"
         :is="field.component"
         v-bind="binds(field)"
-        :modelValue="val(field)"
+        :path="getChildrenPath(field)"
+        :root="false"
         @update:modelValue="update(field.model, $event)"
         @update-batch="updateBatch(field.model, $event)"
       />
@@ -18,13 +19,16 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { schemaFormComposable } from './SchemaFormComposable'
+
+const Schema = {}
+const ModelValue = {}
 
 export default {
   props: {
     schema: {
       type: [Object, Array],
-      required: true,
+      default: () => { return [] },
       validator (schema) {
         if (!Array.isArray(schema)) return true
 
@@ -33,62 +37,36 @@ export default {
     },
     modelValue: {
       type: Object,
-      required: true
+      default: () => { return {} }
     },
     sharedConfig: {
       type: Object,
       default: () => ({})
-    }
+    },
+    path: { type: String, default: '' },
+    root: { type: Boolean, default: true }
   },
   setup (props, { emit }) {
-    const parsedSchema = computed(() => {
-      if (Array.isArray(props.schema)) return props.schema
-
-      const arraySchema = []
-      for (const model in props.schema) {
-        arraySchema.push({
-          ...props.schema[model],
-          model
-        })
-      }
-
-      return arraySchema
-    })
-
-    const update = (property, value) => {
-      emit('update:modelValue', {
-        ...props.modelValue,
-        [property]: value
-      })
-    }
-
-    const updateBatch = (property, values) => {
-      emit('update:modelValue', {
-        ...props.modelValue,
-        ...values
-      })
-    }
-
-    const binds = (field) => {
-      return field.schema
-        ? { schema: field.schema }
-        : { ...props.sharedConfig, ...field }
-    }
-
-    const val = (field) => {
-      if (field.schema && !props.modelValue[field.model]) {
-        return {}
-      }
-
-      return props.modelValue[field.model]
-    }
-
-    return {
+    const {
+      schema,
+      modelValue,
       parsedSchema,
       val,
       binds,
       update,
-      updateBatch
+      updateBatch,
+      getChildrenPath
+    } = schemaFormComposable(props, emit)
+
+    return {
+      schema,
+      modelValue,
+      parsedSchema,
+      val,
+      binds,
+      update,
+      updateBatch,
+      getChildrenPath
     }
   }
 }
