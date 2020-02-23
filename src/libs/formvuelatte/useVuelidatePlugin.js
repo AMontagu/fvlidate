@@ -1,5 +1,6 @@
 import { toRefs, isRef, reactive, watch, h } from 'vue'
 import { required } from '@/libs/validators/withMessages'
+import { useValuesStore } from './valuesStore'
 const unwrap = v => isRef(v) ? v.value : v
 
 export default function VuelidatePlugin (useVuelidate) {
@@ -29,13 +30,21 @@ export default function VuelidatePlugin (useVuelidate) {
 export function withVuelidate (Comp, useVuelidate) {
   return {
     setup (props, { attrs }) {
-      const { validations, modelValue, model } = toRefs(props)
+      const valuesStore = useValuesStore()
+
+      // Object.entries(props).forEach(([key, value]) => {
+      //   console.log(key, value)
+      // })
+      const { validations, model, path } = toRefs(props)
       const propertyName = model.value
+      console.log(path, propertyName, valuesStore.getByPath.value(path))
+
+      console.log('propertyName: ', propertyName)
 
       // Setup validation results for that schema leaf
       const vResults = useVuelidate(
         { [propertyName]: validations.value },
-        { [propertyName]: modelValue },
+        { [propertyName]: valuesStore.getByPath.value(path) },
         propertyName
       )
 

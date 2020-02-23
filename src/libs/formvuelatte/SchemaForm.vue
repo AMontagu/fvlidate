@@ -21,9 +21,6 @@
 <script>
 import { schemaFormComposable } from './SchemaFormComposable'
 
-const Schema = {}
-const ModelValue = {}
-
 export default {
   props: {
     schema: {
@@ -48,10 +45,7 @@ export default {
   },
   setup (props, { emit }) {
     const {
-      schema,
-      modelValue,
       parsedSchema,
-      val,
       binds,
       update,
       updateBatch,
@@ -59,10 +53,7 @@ export default {
     } = schemaFormComposable(props, emit)
 
     return {
-      schema,
-      modelValue,
       parsedSchema,
-      val,
       binds,
       update,
       updateBatch,

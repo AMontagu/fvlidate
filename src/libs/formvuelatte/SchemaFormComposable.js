@@ -2,9 +2,6 @@ import { computed, watch } from 'vue'
 import { useValuesStore } from './valuesStore'
 
 export function schemaFormComposable (props, emit) {
-  console.log(props.schema)
-  console.log(props.modelValue)
-
   const valuesStore = useValuesStore()
 
   if (props.root) {
@@ -31,18 +28,7 @@ export function schemaFormComposable (props, emit) {
     return arraySchema
   })
 
-  // console.log(toRefs(props))
-  Object.entries(props).forEach(([key, value]) => {
-    console.log(key, value)
-  })
-  console.log(props.schema)
-  console.log(valuesStore.state.modelValue)
-
   const update = (property, value) => {
-    console.log(property)
-
-    // valuesStore.state.modelValue[property] = value
-
     emit('update:modelValue', {
       ...valuesStore.getByPath.value(props.path),
       [property]: value
@@ -52,7 +38,7 @@ export function schemaFormComposable (props, emit) {
   const binds = (field) => {
     return isNested(field)
       ? { schema: field.schema }
-      : { ...props.sharedConfig, ...field }
+      : { ...props.sharedConfig, ...field, modelValue: valuesStore.getByPath.value(props.path).value }
   }
 
   const updateBatch = (property, values) => {
@@ -60,14 +46,6 @@ export function schemaFormComposable (props, emit) {
       ...valuesStore.state.modelValue,
       ...values
     })
-  }
-
-  const val = (field) => {
-    if (isNested(field)) {
-      return {}
-    }
-
-    return valuesStore.getModelValueByPath(props.path ? `${props.path}.${field.model}` : field.model)
   }
 
   const isNested = (field) => {
@@ -85,7 +63,6 @@ export function schemaFormComposable (props, emit) {
     parsedSchema,
     binds,
     getChildrenPath,
-    val,
     update,
     updateBatch
   }
